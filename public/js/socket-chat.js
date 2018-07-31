@@ -16,7 +16,7 @@ socket.on('connect', function() {
     console.log('Conectado al servidor');
 
     socket.emit('enterChat', user, function(res) {
-        console.log('Usuarios conectados: ', res);
+        renderUsers(res);
     });
 });
 
@@ -26,16 +26,13 @@ socket.on('disconnect', function() {
 });
 
 socket.on('createMessage', function(message) {
-    console.log('Servidor: ', message);
+    //console.log('Servidor: ', message);
+    renderMessages(message, false);
+    scrollBottom();
 });
 
-/*socket.emit('createMessage', {
-    name: user.name,
-    message: 'Hola a todos'
-});*/
-
 socket.on('listPeople', function(people) {
-    console.log('Servidor: ', people);
+    renderUsers(people);
 });
 
 // Mensajes privados

@@ -20,22 +20,25 @@ io.on('connection', (client) => {
         users.addPerson(client.id, user.name, user.lobby);
 
         client.broadcast.to(user.lobby).emit('listPeople', users.getPeopleByLobby(user.lobby));
+        client.broadcast.to(user.lobby).emit('createMessage', createMessage('Administrador', `${user.name} se unió el chat`));
 
         callback(users.getPeopleByLobby(user.lobby));
     });
 
-    client.on('createMessage', data => {
+    client.on('createMessage', (data, callback) => {
 
         let user = users.getPerson(client.id);
 
         let message = createMessage(user.name, data.message);
         client.broadcast.to(user.lobby).emit('createMessage', message);
+
+        callback(message);
     });
 
     client.on('disconnect', () => {
         let removedPerson = users.removePerson(client.id);
 
-        client.broadcast.to(removedPerson.lobby).emit('createMessage', createMessage(null, `${removedPerson.name} abandonó el chat`));
+        client.broadcast.to(removedPerson.lobby).emit('createMessage', createMessage('Administrador', `${removedPerson.name} abandonó el chat`));
         client.broadcast.to(removedPerson.lobby).emit('listPeople', users.getPeopleByLobby(removedPerson.lobby));
 
     });
